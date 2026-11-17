@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Raphaël Eid Portfolio</title>
+<meta name="description" content="Portfolio audiovisuel de Raphaël Eid : réalisation, cadrage, montage et étalonnage. Courts-métrages, clip, spot pub, interview, live et podcast.">
+<meta property="og:title" content="Raphaël Eid, portfolio audiovisuel">
+<meta property="og:description" content="Réalisation, cadrage, montage et étalonnage, à Toulouse.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@200..900&display=swap">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style id="app-css">
+/* Layout : un tunnel 3D de vignettes en accueil, puis des pages sombres en colonnes fines (liste de projets, fiche projet, moi, contact) pilotées par un bouton Menu flottant. */
+:root{
+  color-scheme:dark;
+  --bg:#0a0a0b; --fg:#f3f1ec; --mute:#8f8b84; --line:#262523; --guide:#151514;
+  --paper:#f3f1ec; --ink:#0a0a0b; --field:#c9c7c2; --rec:#ff3b30;
+  --wide:'Unbounded','Arial Black',system-ui,sans-serif;
+  --cond:'Bebas Neue','Arial Narrow',Impact,sans-serif;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--cond);font-size:20px;letter-spacing:.02em;overflow-x:hidden}
+body.is-home{overflow:hidden}
+*{box-sizing:border-box}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;letter-spacing:inherit}
+p,h1,h2,blockquote{margin:0}
+:focus-visible{outline:2px solid var(--rec);outline-offset:3px}
+.wrap{max-width:1310px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{min-height:100%;background-image:linear-gradient(90deg,var(--guide) 1px,transparent 1px);background-size:calc(min(100vw,1310px)/8) 100%;background-position:center top;padding-bottom:120px}
+.ul{text-decoration:underline;text-underline-offset:3px}
+
+/* logo */
+.logo{font-family:var(--wide);font-weight:900;letter-spacing:-.04em;display:inline-flex;align-items:flex-start;line-height:1}
+.logo i{width:.24em;height:.24em;border-radius:50%;background:var(--rec);margin:.08em 0 0 .08em;animation:rec 1.6s steps(2,jump-none) infinite}
+.logo.big{font-size:clamp(54px,9vw,112px)}
+.logo.sm{font-size:30px}
+@keyframes rec{50%{opacity:.25}}
+
+/* accueil */
+.home{position:fixed;inset:0;overflow:hidden;perspective:700px;background:var(--bg)}
+.scene{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .5s ease-out}
+.frame,.tile{position:absolute;left:50%;top:50%;transform-origin:0 0;will-change:transform,opacity}
+.frame{border:1px solid var(--line);pointer-events:none}
+.tile{display:block;aspect-ratio:16/9;overflow:hidden;background:var(--guide)}
+.tile img,.tile video,.media img,.media video{display:block;width:100%;height:100%;object-fit:cover}
+.tile .pst,.tile video.tz{position:absolute;inset:0}
+.tile video.tz{opacity:0;transition:opacity .3s}
+.tile video.tz.live{opacity:1}
+.home .center{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.home .center .logo{background:var(--bg);padding:.25em .35em;box-shadow:0 0 60px 40px var(--bg)}
+.ph{width:100%;height:100%;min-height:100%;display:grid;place-items:center;text-align:center;padding:10px;color:var(--fg);
+  background:linear-gradient(135deg,hsl(var(--h) 28% 24%),hsl(calc(var(--h) + 50) 32% 10%))}
+.ph span{font-size:clamp(14px,1.6vw,22px);opacity:.75}
+
+/* bouton flottant + menu */
+.pill{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;background:var(--paper);color:var(--ink);
+  font-size:24px;padding:8px 32px 6px;border-radius:999px;white-space:nowrap}
+.pill:hover{background:var(--fg);transform:translateX(-50%) scale(1.05)}
+.menu{position:fixed;inset:0;z-index:40;background:var(--paper);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 110px max(16px,env(safe-area-inset-left,0px))}
+.menu a{font-family:var(--wide);font-weight:900;font-size:clamp(34px,9.4vw,104px);line-height:1.06;letter-spacing:-.01em}
+.menu a:hover,.menu a.on{color:var(--field)}
+.menu .pill{background:var(--ink);color:var(--paper)}
+
+/* en-tête des pages */
+.top{display:flex;flex-direction:column;align-items:center;gap:86px;padding-block:44px 54px}
+.lbl{color:var(--mute);font-size:20px}
+
+/* liste projets */
+.list{border-top:1px solid var(--line)}
+.row{display:flex;align-items:baseline;gap:6px 16px;flex-wrap:wrap;padding:22px 24px 16px;border-bottom:1px solid var(--line);min-width:0}
+.cat{font-family:var(--wide);font-weight:200;font-size:clamp(22px,3.1vw,40px);letter-spacing:.04em;text-transform:uppercase;line-height:1.1}
+.ttl{font-size:clamp(24px,2.6vw,34px);text-transform:uppercase;line-height:1.1}
+.arr{margin-left:auto;font-family:var(--wide);font-weight:200;font-size:clamp(26px,3.4vw,46px);line-height:.8;align-self:center}
+a.row:hover,a.row:focus-visible{background:var(--fg);color:var(--ink)}
+.rtools{margin-left:auto;display:flex;gap:14px;align-items:center;font-size:18px;color:var(--mute)}
+.rtools button:hover,.rtools a:hover{color:var(--fg)}
+.add{display:block;width:100%;text-align:left;padding:22px 24px 16px;border:1px dashed var(--mute);border-top:0;color:var(--mute);font-size:26px}
+.add:hover{color:var(--fg);border-color:var(--fg)}
+#peek{position:fixed;z-index:20;width:320px;aspect-ratio:16/9;pointer-events:none;overflow:hidden;transform:translate(-50%,-50%);background:var(--guide)}
+#peek img,#peek video{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+#peek .pst,#peek video{position:absolute;inset:0}
+
+/* fiche projet */
+.back{display:inline-block;color:var(--mute);font-size:17px;padding-block:36px 10px}
+.back:hover{color:var(--fg)}
+.phead{display:flex;justify-content:space-between;align-items:baseline;gap:8px 24px;flex-wrap:wrap;padding-bottom:56px}
+.phead h1{font-weight:400;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 20px;min-width:0}
+.phead .cat{font-size:clamp(30px,5.6vw,72px)}
+.phead .ttl{font-size:clamp(34px,5vw,64px)}
+.yr{font-size:clamp(24px,2.6vw,34px)}
+.media{position:relative;background:var(--guide);overflow:hidden}
+.cover{aspect-ratio:16/9;max-width:100%}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding-block:110px 100px}
+.quote{font-family:var(--wide);font-weight:300;font-size:clamp(18px,2.3vw,30px);line-height:1.18;text-transform:uppercase;text-wrap:balance;white-space:pre-line;min-width:0}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.gal .media{aspect-ratio:16/9;max-width:100%}
+.cover.tall{aspect-ratio:9/16;width:min(100%,400px);margin-inline:auto}
+.cover.sq{aspect-ratio:var(--r,1);width:min(100%,620px);margin-inline:auto}
+.gal.g4{grid-template-columns:repeat(4,1fr)}
+.gal .media.tall{aspect-ratio:9/16}
+.gal.gmix{display:flex;flex-wrap:wrap;gap:16px}
+.gal.gmix .media,.gal.gmix .media.tall{height:clamp(200px,30vw,400px);aspect-ratio:var(--r,1.78);flex:0 0 auto;max-width:100%}
+.gal.gmix .addm{height:clamp(200px,30vw,400px)}
+.desc{font-family:var(--wide);font-weight:300;font-size:15px;line-height:1.7;max-width:62ch;white-space:pre-line;padding-top:48px;letter-spacing:.01em}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;padding-block:130px 40px}
+.stat .n{font-family:var(--wide);font-weight:900;font-style:italic;font-size:clamp(40px,5vw,60px);line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .l{color:var(--mute);font-size:24px;text-transform:uppercase}
+.cta{display:inline-block;margin-top:40px;border:1px solid var(--fg);padding:14px 28px 10px;font-size:24px}
+.cta:hover{background:var(--fg);color:var(--ink)}
+
+/* moi */
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;justify-items:start}
+.thumbs .media{width:min(100%,165px);aspect-ratio:15/8}
+.thumbs .media:nth-child(even){justify-self:center}
+.thumbs .media:last-child{justify-self:end}
+.mq{overflow:hidden;white-space:nowrap;line-height:1}
+.track{display:inline-flex;animation:mq 46s linear infinite}
+.mq.rev .track{animation-direction:reverse}
+@keyframes mq{to{transform:translateX(-50%)}}
+.big .track span{font-size:clamp(46px,8.6vw,118px);padding-right:.18em;text-transform:uppercase}
+.big .o{font-family:var(--wide);font-weight:200;letter-spacing:.02em}
+.big .b{font-family:var(--cond);font-size:clamp(52px,9.6vw,132px)!important}
+.bigwrap{padding-block:50px 110px;display:grid;gap:4px}
+.about{font-family:var(--wide);font-weight:400;font-size:clamp(15px,1.75vw,22px);line-height:1.2;text-transform:uppercase;text-align:center;max-width:30em;margin-inline:auto;color:var(--mute);white-space:pre-line;text-wrap:pretty}
+.portrait{width:min(100%,490px);aspect-ratio:3/2;margin:40px auto 0}
+.portrait.tall,.portrait.sq{aspect-ratio:var(--r,1);width:min(100%,420px)}
+.portrait.tall img{object-position:50% 50%!important}
+.words{display:flex;gap:10px 24px;flex-wrap:wrap;justify-content:center;padding-top:30px;font-size:18px;color:var(--mute)}
+
+/* contact */
+.cname{font-family:var(--wide);font-weight:800;font-size:clamp(24px,3.4vw,34px);text-align:center;text-transform:uppercase}
+.cbig{display:grid;gap:34px;justify-items:center;padding-block:70px 30px;text-align:center}
+.cbig .v{font-family:var(--wide);font-weight:200;font-size:clamp(17px,3.6vw,44px);user-select:all;overflow-wrap:anywhere;max-width:100%}
+.cbig button{color:var(--mute);font-size:18px}
+.cbig button:hover{color:var(--fg)}
+.csoc{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;padding-top:26px;font-size:22px}
+
+/* pied de page */
+.foot{padding-top:220px}
+.footgrid{display:flex;justify-content:center;gap:40px 90px;flex-wrap:wrap;font-size:17px;text-transform:uppercase}
+.fc{display:grid;gap:14px;align-content:start;min-width:0}
+.fc .sel{user-select:all;overflow-wrap:anywhere}
+.strip{margin-top:90px;font-size:22px;text-transform:uppercase}
+.strip .track{animation-duration:60s}
+.strip span{padding-right:.6em}
+
+/* mode édition */
+.ebar{position:fixed;z-index:50;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));display:flex;gap:8px;align-items:center;font-family:system-ui,sans-serif;font-size:13px;letter-spacing:0}
+.ebar button{background:var(--line);color:var(--fg);border:1px solid var(--mute);border-radius:6px;padding:7px 12px}
+.ebar button.pri{background:var(--fg);color:var(--ink);border-color:var(--fg);font-weight:600}
+.est{background:var(--ink);color:var(--fg);padding:6px 10px;border-radius:6px;max-width:52vw}
+.est:empty{display:none}
+.ed{outline:1px dashed var(--mute);outline-offset:4px;min-width:2ch;cursor:text}
+.ed:focus{outline:1px solid var(--fg)}
+.ed:empty::before{content:attr(data-ph);opacity:.4}
+.mtools{position:absolute;left:8px;bottom:8px;display:flex;gap:6px;flex-wrap:wrap;font-family:system-ui,sans-serif;font-size:12px;letter-spacing:0}
+.mtools button,.addm{background:var(--ink);color:var(--fg);border:1px solid var(--mute);border-radius:6px;padding:6px 10px}
+.addm{aspect-ratio:16/9;max-width:100%;border-style:dashed;background:none;color:var(--mute);font-family:var(--cond);font-size:24px;border-radius:0}
+.lk{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+.lk .lab{color:var(--mute)}
+.lk .url{text-transform:none;font-family:system-ui,sans-serif;font-size:14px;letter-spacing:0;overflow-wrap:anywhere;min-width:12ch}
+.hint{font-family:system-ui,sans-serif;font-size:13px;letter-spacing:0;color:var(--mute);padding-top:12px;max-width:60ch;line-height:1.5}
+
+@media (max-width:700px){
+  .two,.gal,.stats{grid-template-columns:1fr}
+  .two>div:empty{display:none}
+  .two{padding-block:60px}
+  .stats{padding-block:70px 20px}
+  .top{gap:50px}
+  .row{padding-inline:8px}
+  .foot{padding-top:120px}
+  .thumbs{grid-template-columns:repeat(2,1fr)}
+  .gal.g4{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){.track,.logo i{animation:none}.scene{transition:none}}
+</style>
+<div id="app"></div>
+<input type="file" id="filepick" accept="image/*,video/*" hidden>
+<script type="application/json" id="state">{"site":{"logo":"RE","name":"Raphaël Eid","city":"TOULOUSE, FRANCE","email":"raphael.eid07@gmail.com","phone":"07 81 71 33 48","instagram":"","linkedin":"https://www.linkedin.com/feed/","strip":"Raphaël Eid - Portfolio audiovisuel"},"about":{"w1":"Raconter","w2":"en images","text":"Étudiant en deuxième année de bachelor audiovisuel, je m'intéresse à tout ce qui donne du relief à une image : le cadre, la lumière, le montage, l'étalonnage. J'avance en cherchant à faire mieux qu'au projet précédent et à essayer des méthodes que je ne connais pas encore. Chaque tournage m'apprend quelque chose, et c'est ce qui me donne envie du suivant.","photos":[null,null,null,null],"portrait":{"id":"101a95b02328a650ab13413e9c8e8fac","t":"image","r":0.81}},"projects":[{"id":"ex1","cat":"COURT-MÉTRAGE - FEED THE MACHINE","title":"RÉALISATEUR & POST PRODUCTION","year":"2026","quote":"Des néons rouges de la nuit au noir et blanc final, un face-à-face qui se resserre.","text":"Court-métrage de fiction de cinq minutes, que j'ai réalisé et coécrit avec Finn Arp. Le film suit Slim, un jeune homme, entre sa famille, ses amis et sa rencontre avec un producteur.\n\nChaque partie a sa propre lumière. La nuit en ville baigne dans le rouge, le bureau du producteur est plongé dans le noir avec une seule source qui découpe les visages, et le dénouement bascule en noir et blanc.\n\nUne équipe technique de six personnes et quatre comédiens : Eliott Livolsi (Slim), Lucas Cathary (Yanis), Mélanie Lanchier (la mère) et William Vity (le producteur).","stats":[{"n":"6","l":"Personnes dans l'équipe technique"},{"n":"4","l":"Comédiens"}],"cover":{"id":"2c0fb44529f511d40abe6abf398609e0","t":"video","r":1.78},"gallery":[{"id":"01e5b828742a38ba0a1afa232c5a50a4","t":"image","r":1.78},{"id":"6349d440811f631a9d74590cf1b388c8","t":"image","r":1.78},{"id":"03b407b1a77eaf15481d8160632e46ad","t":"image","r":1.78},{"id":"340e2a3b0a0839cdfc0447a14134df8c","t":"image","r":1.78},{"id":"bf8142ccaa6a45d14aa371d3c3bb0940","t":"image","r":1.78},{"id":"83a5031a411d8b273a26834512b027d3","t":"image","r":1.78}],"link":"","teasers":[{"id":"1424f76c4b4a1b8fd3952c5e94248892","t":"video","r":1.78,"tz":1,"p":"ac08f86f153e209f0f4f8bcb4b529603"},{"id":"2ebaec80e5e32a85d0bcca9d35e813f5","t":"video","r":1.78,"tz":1,"p":"df18a56b121e3aa3bb4a5a4deb85fb2e"}]},{"id":"ex2","cat":"INTERVIEW KONBINI FAST & CURIOUS","title":"RÉALISATEUR & POST-PRODUCTION","year":"2026","quote":"Seize dilemmes de danseuse, une réponse à chaque fois, sans temps mort.","text":"Une interview face caméra au format Fast & Curious popularisé par Konbini : deux propositions s'affichent à l'écran, l'invitée en choisit une et dit pourquoi. Ici, Anna, danseuse classique, tranche entre pointe et demi-pointe, Casse-Noisette et Le Lac des cygnes, danser sur scène ou en studio, prof bienveillant ou prof exigeant, et même Booba ou Damso.\n\nL'image reste simple pour laisser la place aux réponses : un plan fixe vertical, un fond clair, une plante en arrière-plan et un micro-cravate. Au montage, des cartons en noir et blanc annoncent chaque dilemme et donnent le rythme, pour une vidéo d'une minute trente pensée pour les réseaux.\n\nJ'ai réalisé le tournage et assuré la post-production.","stats":[{"n":"16","l":"Dilemmes posés"},{"n":"1:34","l":"Durée de la vidéo"}],"cover":{"id":"ae7ed060736155adb21511394337d817","t":"video","r":0.56},"gallery":[{"id":"a10f0773261ff63acbafeda4f1290e8e","t":"image","r":0.56},{"id":"124a3f64deea15e39a2ae66e0d956819","t":"image","r":0.56},{"id":"a3c7cba0480f563fe9f3d7c889924077","t":"image","r":0.56},{"id":"bb9ea9df8e287c807cbbb032eda1d4a7","t":"image","r":0.56},{"id":"8e73ba924b9659b8c33c33dbbdf7b583","t":"image","r":0.71},{"id":"18036839b35d17ec6fff214f5d567937","t":"image","r":1.26},{"id":"c6c870ee550d10205e32613257a0d098","t":"image","r":0.98}],"link":"","teasers":[{"id":"668e42c324532523e7eb68aa25228147","t":"video","r":0.56,"tz":1,"p":"07cc481a0d63fc07ba499348c5beeefd"},{"id":"3cbf295c72a3ec7a02d8da589ef74df2","t":"video","r":0.56,"tz":1,"p":"283393d6bf39ebd09c9c6b288208c6e1"}]},{"id":"ex3","cat":"CLIP MUSICAL - PERCOCET - SEDNA FT SAWTCHEE","title":"CADREUR & PRODUCTION","year":"2026","quote":"Un dîner aux chandelles dans le noir, les néons violets d'un studio, puis le plein jour sur un toit de Toulouse.","text":"Clip du titre Percocet, de Sedna en featuring avec Sawtchee, tourné à Toulouse au Sony A7S III avec une équipe de cinq personnes. J'étais au cadre et à la production.\n\nLe clip alterne trois décors. Au studio d'Ynov Campus, une table dressée dans le noir : bougies, vin rouge, costumes et lunettes fumées, avec une seule source de lumière qui découpe les silhouettes. Au studio d'enregistrement Swed Records, les deux artistes rappent sous des néons violets, la caméra très près des visages. Au parking des Carmes, le clip sort au grand jour, entre plans larges sur les toits de la ville et contre-plongées au grand-angle.\n\nLe montage fait passer du noir presque total à la pleine lumière. Des flous de mouvement et des passages en vision nocturne verte relient les séquences.","stats":[{"n":"3","l":"Lieux de tournage à Toulouse"},{"n":"5","l":"Personnes dans l'équipe"}],"cover":{"id":"1d3e29b538b6bf16d033e764b1050a6f","t":"video"},"gallery":[{"id":"1adc0ea032ff3c427249075c23244a2c","t":"image"},{"id":"980655c37964e192bc80ed31b7299dd3","t":"image"},{"id":"cbb424ff6829c6e727196f7f1715994d","t":"image"},{"id":"12046988680a23046ae6d9f633f2925e","t":"image"}],"link":"https://youtu.be/yUHaVSsUlP8","teasers":[{"id":"04f00b4d9abe3736905b59e14a7f92e7","t":"video","r":1.78,"tz":1,"p":"a152df8745e01504678fc5fee0ebc554"},{"id":"729bd2154419d26fb24df628cb975472","t":"video","r":1.78,"tz":1,"p":"12dd51715333c0d78871f0c8da040a06"}]},{"id":"ex4","cat":"SPOT PUB COMPAGNONS DES CIMES","title":"CHEF OPÉRATEUR & CADREUR","year":"2025","quote":"On enfile le sac en boutique, et le plan suivant on est déjà en montagne.","text":"Spot publicitaire d'une minute pour Les Compagnons des Cimes, magasin d'équipement de montagne à Toulouse. Un client pousse la porte de la boutique, le vendeur lui tend un sac : « J'ai exactement ce qu'il vous faut. » Il boucle la sangle, et le film bascule en pleine nature.\n\nLa partie montagne a été tournée à la cascade de l'Artigues : sentier en sous-bois, torrent, passage rocheux au piolet. Des plans serrés montrent le matériel en situation et des filés rapides donnent l'énergie de la course. Le spot revient ensuite en boutique et se termine sur un plan produit qui affiche le sac, les bâtons et le piolet avec leurs prix.\n\nTourné à la Sony FX6 par une équipe de quatre personnes. J'étais chef opérateur et cadreur.","stats":[{"n":"2","l":"Lieux de tournage"},{"n":"4","l":"Personnes dans l'équipe"}],"cover":{"id":"5ab5a4be46cdde2a468e979b0609dbff","t":"video","r":1.78},"gallery":[{"id":"741b2ad1d6785590cf8d3bd86af85b8a","t":"image","r":1.78},{"id":"eaa3b116ae86f11f5ad4bbf7a88bb750","t":"image","r":1.78},{"id":"b10624e929408a0dd53834a5c4af6931","t":"image","r":1.78},{"id":"515cb7fcf01c5c4352d8729a7c5ab30f","t":"image","r":1.78}],"link":"","teasers":[{"id":"30773862f0d7f77e420b7239fc677211","t":"video","r":1.78,"tz":1,"p":"1216b20c40eccaae181607669b6af804"},{"id":"a40376f5078d8807874963eb339f49dd","t":"video","r":1.78,"tz":1,"p":"50f07ddffdc7f61a08913862a0378a9e"}]},{"id":"mwdonvlmcd","cat":"STREAMING - LA PLANQUE","title":"DIRECTION ARTISTIQUE & CADREUR","year":"2026","quote":"Trois amis, une cuisine, des contraintes absurdes, et aucune seconde prise.","text":"La Planque est une émission diffusée en direct sur Twitch, sur la chaîne LaPlanque_Prod, le vendredi 1er mai 2026. Trois candidats doivent y cuisiner dans des conditions qui leur compliquent sérieusement la tâche, et tout se joue en direct.\n\nJ'ai assuré la direction artistique du projet, avec un univers visuel rétro entre fenêtre d'ordinateur et fond d'écran des années 2000, et j'étais au cadre pendant le live.","stats":[{"n":"3","l":"Candidats aux fourneaux"},{"n":"19H30","l":"Début du live, vendredi 1er mai 2026"},{"n":"3H","l":"De live en direct"}],"cover":{"id":"27c030a832496705b6da2d7bd51c71be","t":"image","r":1.03},"gallery":[],"link":""},{"id":"mwdopfqhcf","cat":"COURT MÉTRAGE 48H - JUDE","title":"PRODUCTION & CADREUR","year":"2026","quote":"Deux femmes, une table, un téléphone, et 48 heures pour en faire un film noir.","text":"Court-métrage réalisé en 48 heures, de l'écriture au montage, sur un thème imposé : le film noir. Nous étions cinq, avec deux Sony A7 III.\n\nJude est un huis clos. Jude fait face à une psychologue, de part et d'autre d'une table, dans une pièce plongée dans l'obscurité. Un téléphone, un carnet, et une séance filmée comme un interrogatoire, jusqu'au coup de fil qui clôt le film.\n\nLe thème a dicté l'image : fond noir, lumière dure et très localisée, visages à moitié dans l'ombre. Tourner à deux caméras a fait gagner un temps précieux sur un délai aussi court.\n\nJ'étais au cadre et à la production, et j'ai enregistré la voix off.","stats":[{"n":"48","l":"Heures pour écrire, tourner et monter"},{"n":"5","l":"Personnes dans l'équipe"}],"cover":{"id":"3acdfc69bb1774bdfce15c449b559553","t":"video","r":1.78},"gallery":[{"id":"c4240752d118f226e0aed5ef1fd7a9b3","t":"image","r":1.78},{"id":"08e4f5ff29a1a5f8ba19c9b07146f6d4","t":"image","r":1.78},{"id":"493bb0072ad2bf0b97a2ccf50cc3a5cb","t":"image","r":1.78},{"id":"3b933aa82ddb2359d11b5c26fe6610c9","t":"image","r":1.78}],"link":"","teasers":[{"id":"946cfa55fef3f83ec9053da1e9c9d728","t":"video","r":1.78,"tz":1,"p":"8d83ea3ec01949c5ce935cf05eaaa0cb"},{"id":"b9db71b09d68fbf8745f7a180754f0f9","t":"video","r":1.78,"tz":1,"p":"1a072d2107f7d096e16b4570bc0c2dfb"}]},{"id":"mwdostfk4k","cat":"PODCAST - 5 ÉTOILES","title":"SCÉNARISTE, PRÉSENTATEUR ET POST PRODUCTION","year":"2026","quote":"Je ne sais pas si c'est le meilleur podcast de cinéma, mais c'est un chef-d'œuvre.","text":"5 Étoiles, c'est le rendez-vous où le cinéma se raconte à travers les yeux de celles et ceux qui l'aiment et le font. Dans chaque épisode, un invité ou une invitée vient nous présenter un film qu'il ou elle considère comme un chef-d'œuvre. Entre films doudous et grosses tartes dans la gueule, chaque échange explore la passion de nos invités pour le 7e art.\n\nJ'écris la structure et les conducteurs des épisodes, et je présente l'émission. À l'antenne, je suis accompagné d'Andrea, qui tient le rôle du « Sniper ». La réalisatrice Léa Fehner est notamment venue parler de son film Sages-femmes, sorti en 2023.\n\nLe projet ne s'arrête pas là : nous voulons continuer le podcast avec de nouveaux invités.","stats":[{"n":"1","l":"Invité et un chef-d'œuvre par épisode"},{"n":"2","l":"Voix à l'antenne"}],"cover":{"id":"f0cdf832be77e2137804a2da57055455","t":"image","r":1},"gallery":[],"link":""}]}</script>
+<script id="app-js">
+(function(){
+'use strict';
+var EXT={"2c0fb44529f511d40abe6abf398609e0":".mp4","01e5b828742a38ba0a1afa232c5a50a4":".jpg","6349d440811f631a9d74590cf1b388c8":".jpg","03b407b1a77eaf15481d8160632e46ad":".jpg","340e2a3b0a0839cdfc0447a14134df8c":".jpg","bf8142ccaa6a45d14aa371d3c3bb0940":".jpg","83a5031a411d8b273a26834512b027d3":".jpg","1424f76c4b4a1b8fd3952c5e94248892":".mp4","ac08f86f153e209f0f4f8bcb4b529603":".jpg","2ebaec80e5e32a85d0bcca9d35e813f5":".mp4","df18a56b121e3aa3bb4a5a4deb85fb2e":".jpg","ae7ed060736155adb21511394337d817":".mp4","a10f0773261ff63acbafeda4f1290e8e":".jpg","124a3f64deea15e39a2ae66e0d956819":".jpg","a3c7cba0480f563fe9f3d7c889924077":".jpg","bb9ea9df8e287c807cbbb032eda1d4a7":".jpg","8e73ba924b9659b8c33c33dbbdf7b583":".jpg","18036839b35d17ec6fff214f5d567937":".jpg","c6c870ee550d10205e32613257a0d098":".jpg","668e42c324532523e7eb68aa25228147":".mp4","07cc481a0d63fc07ba499348c5beeefd":".jpg","3cbf295c72a3ec7a02d8da589ef74df2":".mp4","283393d6bf39ebd09c9c6b288208c6e1":".jpg","1d3e29b538b6bf16d033e764b1050a6f":".mp4","1adc0ea032ff3c427249075c23244a2c":".jpg","980655c37964e192bc80ed31b7299dd3":".jpg","cbb424ff6829c6e727196f7f1715994d":".jpg","12046988680a23046ae6d9f633f2925e":".jpg","04f00b4d9abe3736905b59e14a7f92e7":".mp4","a152df8745e01504678fc5fee0ebc554":".jpg","729bd2154419d26fb24df628cb975472":".mp4","12dd51715333c0d78871f0c8da040a06":".jpg","5ab5a4be46cdde2a468e979b0609dbff":".mp4","741b2ad1d6785590cf8d3bd86af85b8a":".jpg","eaa3b116ae86f11f5ad4bbf7a88bb750":".jpg","b10624e929408a0dd53834a5c4af6931":".jpg","515cb7fcf01c5c4352d8729a7c5ab30f":".jpg","30773862f0d7f77e420b7239fc677211":".mp4","1216b20c40eccaae181607669b6af804":".jpg","a40376f5078d8807874963eb339f49dd":".mp4","50f07ddffdc7f61a08913862a0378a9e":".jpg","27c030a832496705b6da2d7bd51c71be":".jpg","3acdfc69bb1774bdfce15c449b559553":".mp4","c4240752d118f226e0aed5ef1fd7a9b3":".jpg","08e4f5ff29a1a5f8ba19c9b07146f6d4":".jpg","493bb0072ad2bf0b97a2ccf50cc3a5cb":".jpg","3b933aa82ddb2359d11b5c26fe6610c9":".jpg","946cfa55fef3f83ec9053da1e9c9d728":".mp4","8d83ea3ec01949c5ce935cf05eaaa0cb":".jpg","b9db71b09d68fbf8745f7a180754f0f9":".mp4","1a072d2107f7d096e16b4570bc0c2dfb":".jpg","f0cdf832be77e2137804a2da57055455":".jpg","101a95b02328a650ab13413e9c8e8fac":".jpg"};
+function MEDIA(id){return 'media/'+id+(EXT[id]||'')}
+var HEAD='<title>Raphaël Eid Portfolio</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Unbounded:wght@200..900&display=swap">\n';
+var RESET=':root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}';
+var $=function(s,r){return (r||document).querySelector(s)};
+var app=$('#app'), pick=$('#filepick');
+var S=JSON.parse($('#state').textContent);
+var editing=false, dirty=false, canEdit=false, artifact=null, assets=null, menuOpen=false, statusMsg='', pending=null, raf=0;
+var reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+var CE=(function(){var d=document.createElement('div');try{d.setAttribute('contenteditable','plaintext-only');return d.contentEditable==='plaintext-only'?'plaintext-only':'true'}catch(e){return 'true'}})();
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function get(path){return path.split('.').reduce(function(o,k){return o==null?o:o[k]},S)}
+function set(path,v){var ks=path.split('.'),k=ks.pop(),o=ks.reduce(function(o,k){return o[k]},S);o[k]=v}
+function okUrl(u){return /^https?:\/\/\S+$/i.test(u||'')}
+function hue(s){var h=0;s=String(s);for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return h}
+
+function T(path,tag,cls,o){
+  o=o||{};var v=get(path);v=v==null?'':v;
+  if(!editing){return v===''?'':'<'+tag+' class="'+cls+'">'+esc(v)+'</'+tag+'>'}
+  return '<'+tag+' class="'+cls+' ed" contenteditable="'+CE+'" data-path="'+path+'" data-ph="'+esc(o.ph||'Texte')+'"'+(o.multi?' data-multi':'')+(o.rr?' data-rr':'')+'>'+esc(v)+'</'+tag+'>';
+}
+function mediaTag(m,ctl){
+  if(!m||!/^[\w-]+$/.test(m.id))return '';
+  var src=MEDIA(m.id),pos=m.r&&m.r<1?' style="object-position:50% 22%"':'';
+  return m.t==='video'?'<video src="'+src+'"'+pos+' muted loop autoplay playsinline preload="metadata"'+(ctl?' controls':'')+'></video>':'<img src="'+src+'"'+pos+' alt="" loading="lazy">';
+}
+function ph(label){return '<div class="ph" style="--h:'+hue(label)+'"><span>'+esc(label)+'</span></div>'}
+function M(path,cls,label,ctl){
+  var m=get(path), inner=m?mediaTag(m,ctl):ph(label), tools='';
+  if(editing)tools='<div class="mtools"><button data-up="'+path+'">'+(m?'Remplacer':'Importer photo ou vidéo')+'</button>'+(m?'<button data-rm="'+path+'">Retirer</button>':'')+'</div>';
+  return '<div class="media '+cls+(m&&m.r&&m.r<1?' tall':(m&&m.r&&m.r<1.4?' sq':''))+'"'+(m&&m.r?' style="--r:'+(+m.r||1.78)+'"':'')+'>'+inner+tools+'</div>';
+}
+function logo(c,href){return '<a class="logo '+c+'" href="'+href+'" aria-label="'+esc(S.site.name)+', accueil">'+esc(S.site.logo)+'<i></i></a>'}
+function top(label){return '<header class="top">'+logo('sm','#')+'<p class="lbl">'+label+'</p></header>'}
+function social(path,label){
+  if(editing)return '<p class="lk"><span class="lab">'+label+'</span>'+T(path,'span','url',{ph:'https://…'})+'</p>';
+  var u=get(path);return okUrl(u)?'<p><a class="ul" href="'+esc(u)+'" target="_blank" rel="noopener">'+label+'</a></p>':'';
+}
+function strip(){
+  var one='<span>'+esc(S.site.strip)+' -</span>',half='';for(var i=0;i<10;i++)half+=one;
+  return '<div class="strip mq"><div class="track">'+half+half+'</div></div>'+(editing?'<div class="wrap"><p class="lk hint"><span class="lab">Bandeau défilant</span>'+T('site.strip','span','url',{rr:1})+'</p></div>':'');
+}
+function footer(full){
+  var g=full?'<div class="wrap footgrid"><div class="fc">'+T('site.city','p','')+T('site.name','p','')+social('site.linkedin','LINKEDIN')+social('site.instagram','INSTAGRAM')+'</div><div class="fc">'+T('site.email','p','sel')+T('site.phone','p','sel')+'<button class="ul" data-act="copy" data-v="site.email">COPIER LE MAIL</button></div></div>':'';
+  return '<footer class="foot">'+g+strip()+'</footer>';
+}
+
+function pageHome(){return '<main class="home"><div class="scene" id="scene"></div><div class="center"><span class="logo big">'+esc(S.site.logo)+'<i></i></span></div></main>'}
+
+function pageProjets(){
+  var rows=S.projects.map(function(p,i){
+    var b='projects.'+i+'.';
+    if(editing)return '<div class="row">'+T(b+'cat','span','cat',{ph:'CATÉGORIE'})+T(b+'title','span','ttl',{ph:'TITRE : TON RÔLE'})+'<span class="rtools"><button data-act="up" data-i="'+i+'" aria-label="Monter">↑</button><button data-act="down" data-i="'+i+'" aria-label="Descendre">↓</button><button data-act="del" data-i="'+i+'">Supprimer</button><a class="ul" href="#p-'+p.id+'">Ouvrir la fiche</a></span></div>';
+    return '<a class="row" href="#p-'+p.id+'" data-i="'+i+'"><span class="cat">'+esc(p.cat)+'</span><span class="ttl">'+esc(p.title)+'</span><span class="arr" aria-hidden="true">↗</span></a>';
+  }).join('');
+  return '<div class="page">'+top('PROJETS')+'<div class="wrap"><div class="list">'+rows+'</div>'+(editing?'<button class="add" data-act="addp">+ Ajouter un projet</button>':'')+'</div>'+footer(true)+'</div><div id="peek" hidden></div>';
+}
+
+function galCls(g){
+  if(!g.length)return '';
+  var tall=g.filter(function(m){return m.r&&m.r<.7}).length,odd=g.filter(function(m){return m.r&&m.r<1.2}).length;
+  return tall===g.length?' g4':(odd?' gmix':'');
+}
+function pageProjet(i){
+  var p=S.projects[i],b='projects.'+i+'.';
+  var gal=p.gallery.map(function(m,k){return M(b+'gallery.'+k,'','',true)}).join('')+(editing?'<button class="addm" data-add="'+b+'gallery">+ Ajouter une photo ou une vidéo</button>':'');
+  var stats=p.stats.map(function(s,k){return (editing||s.n||s.l)?'<div class="stat">'+T(b+'stats.'+k+'.n','p','n',{ph:'0'})+T(b+'stats.'+k+'.l','p','l',{ph:'CHIFFRE CLÉ'})+'</div>':''}).join('');
+  var link=editing?'<p class="lk hint"><span class="lab">Lien vers la vidéo complète</span>'+T(b+'link','span','url',{ph:'https://youtube.com/…'})+'</p>':(okUrl(p.link)?'<a class="cta" href="'+esc(p.link)+'" target="_blank" rel="noopener">VOIR LA VIDÉO ↗</a>':'');
+  var quote=T(b+'quote','blockquote','quote',{multi:1,ph:'UNE PHRASE QUI RÉSUME LE PROJET'});
+  return '<div class="page"><div class="wrap"><a class="back" href="#projets">← RETOUR PROJETS</a>'+
+    '<div class="phead"><h1>'+T(b+'cat','span','cat',{ph:'CATÉGORIE'})+T(b+'title','span','ttl',{ph:'TITRE : TON RÔLE'})+'</h1>'+T(b+'year','span','yr',{ph:'ANNÉE'})+'</div>'+
+    M(b+'cover','cover',p.cat||'Image principale',true)+
+    (quote?'<div class="two"><div></div>'+quote+'</div>':'<div style="height:70px"></div>')+
+    (gal?'<div class="gal'+galCls(p.gallery)+'">'+gal+'</div>':'')+
+    T(b+'text','p','desc',{multi:1,ph:'Décris le projet.'})+
+    (stats?'<div class="stats">'+stats+'</div>':'')+link+
+    '</div>'+footer(true)+'</div>';
+}
+
+function pageMoi(){
+  var a=S.about, u1='<span class="o">'+esc(a.w1)+'</span><span class="b">'+esc(a.w2)+'</span>', u2='<span class="b">'+esc(a.w1)+'</span><span class="o">'+esc(a.w2)+'</span>', l1='', l2='';
+  for(var i=0;i<12;i++){l1+=u1;l2+=u2}
+  return '<div class="page">'+top('MOI')+
+    '<div class="bigwrap"><div class="mq big"><div class="track">'+l1+'</div></div><div class="mq big rev"><div class="track">'+l2+'</div></div>'+
+    (editing?'<div class="words"><span>Mots du bandeau :</span>'+T('about.w1','span','',{rr:1})+T('about.w2','span','',{rr:1})+'</div>':'')+'</div>'+
+    '<div class="wrap">'+T('about.text','p','about',{multi:1,ph:'Présente-toi.'})+M('about.portrait','portrait','Ta photo')+'</div>'+footer(true)+'</div>';
+}
+
+function pageContact(){
+  var soc=social('site.linkedin','LINKEDIN')+social('site.instagram','INSTAGRAM');
+  return '<div class="page">'+top('CONTACT')+'<div class="wrap">'+T('site.name','h1','cname')+
+    '<div class="cbig"><div>'+T('site.email','p','v')+'<button class="ul" data-act="copy" data-v="site.email">COPIER LE MAIL</button></div><div>'+T('site.phone','p','v')+'<button class="ul" data-act="copy" data-v="site.phone">COPIER LE NUMÉRO</button></div></div>'+
+    (soc?'<div class="csoc">'+soc+'</div>':'')+'</div>'+footer(false)+'</div>';
+}
+
+function route(){var h=location.hash.slice(1);if(h==='projets'||h==='moi'||h==='contact')return h;if(h.indexOf('p-')===0){for(var i=0;i<S.projects.length;i++)if('p-'+S.projects[i].id===h)return i}return 'home'}
+
+function render(){
+  var r=route(), html=r==='projets'?pageProjets():r==='moi'?pageMoi():r==='contact'?pageContact():typeof r==='number'?pageProjet(r):pageHome();
+  html+=typeof r==='number'?'<a class="pill" href="#projets">RETOUR PROJETS</a>':'<button class="pill" data-act="menu">MENU</button>';
+  var items=[['projets','PROJETS'],['contact','CONTACT'],['moi','MOI'],['','ACCUEIL']];
+  html+='<nav class="menu" id="menu"'+(menuOpen?'':' hidden')+'>'+items.map(function(it){var on=(it[0]||'home')===r;return '<a href="#'+it[0]+'" data-act="nav"'+(on?' class="on" aria-current="page"':'')+'>'+it[1]+'</a>'}).join('')+'<button class="pill" data-act="menu">FERMER</button></nav>';
+  if(canEdit){
+    html+='<div class="ebar"><span class="est" id="est" role="status">'+esc(statusMsg)+'</span>'+((editing||dirty)?'<button class="pri" data-act="save">Enregistrer</button>':'')+'<button data-act="edit">'+(editing?'Aperçu':'Modifier')+'</button></div>';
+  }
+  cancelAnimationFrame(raf);
+  app.innerHTML=html;
+  document.body.classList.toggle('is-home',r==='home');
+  if(r==='home')tunnel();
+}
+function status(m){statusMsg=m;var e=$('#est');if(e)e.textContent=m}
+function touch(){if(!dirty){dirty=true;status('Modifications non enregistrées')}}
+
+/* tunnel 3D de l'accueil */
+function tileMedia(m){
+  if(!m||!/^[\w-]+$/.test(m.id))return '';
+  var src=MEDIA(m.id);
+  if(m.t!=='video')return '<img src="'+src+'" alt="">';
+  /* image fixe dessous : le cadre n'est jamais vide si la vidéo tarde ou ne démarre pas */
+  var pst=m.p&&/^[\w-]+$/.test(m.p)?'<img class="pst" src="'+MEDIA(m.p)+'" alt="">':'';
+  return pst+'<video'+(pst?' class="tz"':'')+' src="'+src+'" muted loop playsinline preload="'+(m.tz?'auto':'metadata')+'"></video>';
+}
+function tunnel(){
+  var scene=$('#scene');if(!scene)return;
+  /* une vignette par extrait vidéo ; à défaut, l'image ou la vidéo principale du projet ; jamais les galeries */
+  var items=[],lists=S.projects.map(function(p){
+    var lab=p.cat||p.title;
+    if(p.teasers&&p.teasers.length)return p.teasers.map(function(m){return {m:m,label:lab,pid:p.id}});
+    return p.cover?[{m:p.cover,label:lab,pid:p.id}]:[];
+  });
+  for(var j=0,any=true;any;j++){any=false;lists.forEach(function(l){if(l[j]){items.push(l[j]);any=true}})}
+  if(!items.length)S.projects.forEach(function(p){items.push({m:null,label:p.cat||p.title,pid:p.id})});
+  if(!items.length)return;
+  var D=2600,N=innerWidth<700?12:20,els=[],k=Math.min(1,Math.max(.5,innerWidth/1200));
+  function rnd(i){var x=Math.sin(i*127.1+3.7)*43758.5453;return x-Math.floor(x)}
+  for(var f=0;f<7;f++){var fe=document.createElement('div');fe.className='frame';scene.appendChild(fe);els.push({el:fe,frame:1,z:f*D/7})}
+  for(var i=0;i<N;i++){
+    var it=items[i%items.length],el=document.createElement('a');
+    el.className='tile';el.href=it.pid?'#p-'+it.pid:'#moi';el.setAttribute('aria-label',it.label||'Photo');
+    var r=it.m&&+it.m.r,sc=r&&r<.9?.5:(r&&r<1.4?.72:1);
+    el.innerHTML=it.m?tileMedia(it.m):ph(it.label);
+    if(sc<1)el.style.aspectRatio=String(r);
+    el.style.width=Math.round((230+rnd(i+3)*190)*k*sc)+'px';
+    scene.appendChild(el);
+    var vd=el.querySelector('video');
+    if(vd){vd.muted=true;if(vd.classList.contains('tz')){
+      vd.addEventListener('timeupdate',function(){if(this.currentTime>.05)this.classList.add('live')});
+      vd.addEventListener('error',function(){this.remove()});
+    }}
+    els.push({el:el,v:vd,on:false,wall:i%4,u:rnd(i)*1.3-.65,z:(i/N)*D+rnd(i+9)*90});
+  }
+  var t0=performance.now(),tick=0,K=innerWidth<700?3:6;
+  function frame(now){
+    if(!scene.isConnected)return;
+    var hw=innerWidth*.52,hh=innerHeight*.52,dt=reduced?0:(now-t0)*.035;
+    for(var j=0;j<els.length;j++){
+      var o=els[j],d=D-((o.z+dt)%D),z=150-d,tr;
+      if(o.frame){o.el.style.width=2*hw+'px';o.el.style.height=2*hh+'px';tr='translate3d(0,0,'+z+'px)'}
+      else if(o.wall===0)tr='translate3d('+(-hw)+'px,'+o.u*hh+'px,'+z+'px) rotateY(90deg)';
+      else if(o.wall===1)tr='translate3d('+o.u*hw+'px,'+(-hh)+'px,'+z+'px) rotateX(-90deg)';
+      else if(o.wall===2)tr='translate3d('+hw+'px,'+o.u*hh+'px,'+z+'px) rotateY(-90deg)';
+      else tr='translate3d('+o.u*hw+'px,'+hh+'px,'+z+'px) rotateX(90deg)';
+      o.el.style.transform=tr+' translate(-50%,-50%)';
+      var op=Math.max(0,Math.min(1,(D-d)/260,d/160));
+      o.el.style.opacity=op;o.d=d;o.op=op;
+    }
+    /* seules les K vignettes les plus proches jouent leur extrait, les autres gardent leur image */
+    if(!reduced&&tick++%10===0){
+      var near=els.filter(function(o){return o.v&&o.v.isConnected&&o.op>.02}).sort(function(a,b){return a.d-b.d}).slice(0,K);
+      els.forEach(function(o){if(!o.v)return;var want=near.indexOf(o)>-1;if(want!==o.on){o.on=want;if(want){var pr=o.v.play();if(pr&&pr.catch)pr.catch(function(){})}else o.v.pause()}});
+    }
+    if(!reduced)raf=requestAnimationFrame(frame);
+  }
+  frame(t0);
+  if(reduced)window.addEventListener('resize',function(){if(scene.isConnected)frame(t0)});
+  $('.home').addEventListener('pointermove',function(e){
+    if(reduced)return;
+    var x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;
+    scene.style.transform='rotateY('+(x*7)+'deg) rotateX('+(-y*7)+'deg)';
+  });
+}
+
+/* enregistrement : la page se republie elle-même avec son contenu à jour */
+function buildDoc(){
+  var reset=RESET,hs=document.head.querySelectorAll('style');
+  for(var i=0;i<hs.length;i++){var t=hs[i].textContent;if(t.indexOf('safe-area-inset')>-1&&t.indexOf('[hidden]')>-1&&t.length<2000){reset=t;break}}
+  var json=JSON.stringify(S).replace(/</g,'\\u003c');
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'+
+    HEAD+'<style id="app-css">'+$('#app-css').textContent+'</style>\n<div id="app"></div>\n<input type="file" id="filepick" accept="image/*,video/*" hidden>\n'+
+    '<script type="application/json" id="state">'+json+'</'+'script>\n<script id="app-js">'+$('#app-js').textContent+'</'+'script></body></html>';
+}
+function save(){
+  if(!artifact){status('Enregistrement indisponible ici.');return}
+  status('Enregistrement…');
+  try{if(editing)sessionStorage.setItem('re-edit','1')}catch(e){}
+  artifact.publish(buildDoc()).then(function(){dirty=false;status('Enregistré')}).catch(function(e){
+    var c=e&&e.code;
+    try{sessionStorage.removeItem('re-edit')}catch(x){}
+    status(c==='conflict'?'La page a été modifiée ailleurs, elle se recharge.':(c==='not_writer'||c==='not_granted')?"Tu n'as pas les droits pour enregistrer cette page.":c==='too_large'?'La page est trop lourde pour être enregistrée.':c==='rate_limited'?'Trop d’enregistrements d’affilée, réessaie dans un instant.':'Enregistrement impossible, réessaie.');
+  });
+}
+function ratio(file,vid){return new Promise(function(res){
+  var u,el=document.createElement(vid?'video':'img'),done=function(v){try{URL.revokeObjectURL(u)}catch(e){}res(v)};
+  try{u=URL.createObjectURL(file)}catch(e){res(0);return}
+  setTimeout(function(){done(0)},4000);
+  if(vid){el.preload='metadata';el.onloadedmetadata=function(){done(el.videoHeight?Math.round(el.videoWidth/el.videoHeight*100)/100:0)}}
+  else el.onload=function(){done(el.naturalHeight?Math.round(el.naturalWidth/el.naturalHeight*100)/100:0)};
+  el.onerror=function(){done(0)};el.src=u;
+})}
+function upload(file){
+  var tgt=pending;pending=null;
+  if(!file||!tgt)return;
+  if(!assets){status('Import indisponible ici.');return}
+  if(file.size>20*1024*1024){status('Fichier trop lourd : 20 Mo maximum. Pour une vidéo longue, mets un extrait et ajoute le lien.');return}
+  var vid=file.type.indexOf('video')===0;
+  if(!vid&&file.type.indexOf('image')!==0){status('Choisis une image ou une vidéo.');return}
+  status('Import en cours…');
+  Promise.all([assets.upload(file),ratio(file,vid)]).then(function(a){
+    var r=a[0],m={id:r.id,t:vid?'video':'image'};if(a[1])m.r=a[1];
+    if(tgt.add)get(tgt.add).push(m);else set(tgt.set,m);
+    dirty=true;statusMsg='Importé. Pense à enregistrer.';render();
+  }).catch(function(e){
+    var c=e&&e.code;
+    status(c==='quota_exceeded'?'Espace de stockage plein.':c==='not_granted'?'Import refusé.':'Import impossible. Essaie un fichier plus léger ou un autre format (JPG, PNG, MP4).');
+  });
+}
+
+app.addEventListener('click',function(e){
+  var b=e.target.closest('[data-up],[data-rm],[data-add],[data-act]');if(!b)return;
+  var d=b.dataset,i=+d.i,P=S.projects;
+  if(d.up!==undefined){pending={set:d.up};pick.value='';pick.click();return}
+  if(d.add!==undefined){pending={add:d.add};pick.value='';pick.click();return}
+  if(d.rm!==undefined){
+    var ks=d.rm.split('.'),last=ks.pop(),par=get(ks.join('.'));
+    if(ks[ks.length-1]==='gallery')par.splice(+last,1);else par[last]=null;
+    touch();render();return;
+  }
+  switch(d.act){
+    case 'menu':menuOpen=!menuOpen;$('#menu').hidden=!menuOpen;break;
+    case 'nav':menuOpen=false;$('#menu').hidden=true;break;
+    case 'edit':editing=!editing;render();break;
+    case 'save':save();break;
+    case 'up':if(i>0){P.splice(i-1,0,P.splice(i,1)[0]);touch();render()}break;
+    case 'down':if(i<P.length-1){P.splice(i+1,0,P.splice(i,1)[0]);touch();render()}break;
+    case 'del':
+      if(!d.armed){d.armed='1';b.textContent='Confirmer la suppression';break}
+      P.splice(i,1);touch();render();break;
+    case 'addp':
+      var id=Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36);
+      P.push({id:id,cat:'',title:'',year:String(new Date().getFullYear()),quote:'',text:'',stats:[{n:'',l:''},{n:'',l:''}],cover:null,gallery:[],link:''});
+      touch();location.hash='p-'+id;break;
+    case 'copy':
+      var v=get(d.v)||'',done=function(){var o=b.textContent;b.textContent='COPIÉ';setTimeout(function(){b.textContent=o},1400)};
+      try{navigator.clipboard.writeText(v).then(done).catch(function(){selectPrev(b)})}catch(x){selectPrev(b)}
+      break;
+  }
+});
+function selectPrev(b){var el=b.previousElementSibling;if(!el)return;var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+app.addEventListener('input',function(e){var el=e.target.closest&&e.target.closest('[data-path]');if(!el)return;set(el.dataset.path,el.innerText.replace(/ /g,' ').replace(/\n+$/,''));touch()});
+app.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&menuOpen){menuOpen=false;$('#menu').hidden=true;return}
+  var el=e.target.closest&&e.target.closest('[data-path]');
+  if(el&&e.key==='Enter'&&!el.hasAttribute('data-multi')){e.preventDefault();el.blur()}
+});
+app.addEventListener('focusout',function(e){var el=e.target.closest&&e.target.closest('[data-rr]');if(el)setTimeout(render,0)});
+app.addEventListener('paste',function(e){
+  var el=e.target.closest&&e.target.closest('[data-path]');if(!el||CE!=='true')return;
+  e.preventDefault();var t=(e.clipboardData||window.clipboardData).getData('text');document.execCommand('insertText',false,t);
+});
+pick.addEventListener('change',function(){upload(pick.files&&pick.files[0])});
+app.addEventListener('pointermove',function(e){
+  var pk=$('#peek');if(!pk)return;
+  var row=e.pointerType==='mouse'&&e.target.closest('a.row'),p=row&&S.projects[+row.dataset.i];
+  /* aperçu toujours horizontal : l'extrait court s'il existe, sinon le média principal, recadré en 16:9 */
+  var pm=p&&((p.teasers&&p.teasers[0])||p.cover);
+  if(!pm){pk.hidden=true;pk.dataset.i='';return}
+  if(pk.dataset.i!==row.dataset.i){pk.dataset.i=row.dataset.i;pk.innerHTML=tileMedia(pm);var pv=pk.querySelector('video');if(pv){pv.muted=true;pv.classList.add('live');var pr=pv.play();if(pr&&pr.catch)pr.catch(function(){})}}
+  pk.hidden=false;pk.style.left=Math.min(innerWidth-180,Math.max(180,e.clientX+200))+'px';pk.style.top=e.clientY+'px';
+});
+window.addEventListener('hashchange',function(){menuOpen=false;render();window.scrollTo(0,0)});
+
+render();
+})();
+</script>
+</body>
+</html>
